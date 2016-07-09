@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'mechanize'
+require 'selenium-webdriver'
 require 'optparse'
 
 def cmdline
@@ -7,83 +7,63 @@ def cmdline
   OptionParser.new do |parser|
     parser.on('-n NUMBER', '登録番号') {|v| args[:number] = v}
     parser.on('-p PASS', '暗証番号') {|v| args[:pass] = v}
-    parser.on('-d DATE', '年月日') {|v| args[:date] = v}
-    parser.on('-t TIME', '1:0830-, 2:1030-, 3:1230-, 4:1430-, 5:1630-') {|v| args[:time] = v}
+    parser.on('-d DAY', '日') {|v| args[:day] = v}
+    parser.on('-t TIME', '0:0830-, 1:1030-, 2:1230-, 3:1430-, 4:1630-') {|v| args[:time] = v}
     parser.parse!(ARGV)
   end
   args
 end
 
-def get_form(tag, forms)
-  for form in forms do
-    if form.name == tag
-      return form
-    end
-  end
-  puts "no page " + tag
-  puts forms.to_s
-  exit
-end
-
-stimehash = {"1" => "0830", "2" => "1030", "3" => "1230", "4" => "1430", "5" => "1630"}
-etimehash = {"1" => "1030", "2" => "1230", "3" => "1430", "4" => "1630", "5" => "1830"}
-
 args = cmdline
-if args[:number] == nil
-  puts "登録番号がねえよ"
-  exit
-end
-if args[:pass] == nil
-  puts "暗証番号がねえよ"
-  exit
-end
-stime = stimehash[args[:time]]
-etime = etimehash[args[:time]]
-if stime == nil || etime == nil
-  puts "時間指定しろよ"
-  exit
+
+userid = args[:number]
+passwd = args[:pass]
+day = args[:day].to_i - 1
+time = args[:time].to_i
+
+driver = Selenium::WebDriver.for :chrome
+driver.navigate.to 'https://sports.tef.or.jp/user/view/user/homeIndex.html'
+elements = driver.find_elements(:id, 'goBtn')
+elements[1].click
+
+driver.find_element(:id, 'userid').send_keys(userid)
+driver.find_element(:id, 'passwd').send_keys(passwd)
+driver.find_element(:id, 'doLogin').click
+
+#新規抽選を申し込む
+driver.find_element(:id, 'goLotSerach').click #typo :(
+
+#野球を選択
+driver.find_elements(:id, 'clscd')[0].click
+driver.find_element(:id, 'doSearch').click
+
+#施設を選択
+# 0:軟式野球場A面
+driver.find_elements(:id, 'doAreaSet')[0].click
+
+for num in 1..7 do
+
+  #日にちを選択
+  driver.find_elements(:class_name, 'calclick')[day].click
+
+  #時間を選択
+  driver.find_elements(:id, 'chkKom-1')[time].click
+  driver.find_element(:id, 'doDateTimeSet').click
+
+  #内容確認
+  selection = driver.find_element(:id, "makeList")
+  options = selection.find_elements(:tag_name, "option")
+  options[options.size - 1].click
+  driver.find_element(:id, "applycnt").send_keys("20")
+  driver.find_element(:id, "doConfirm").click
+
+  #最終確認
+  driver.find_element(:id, "doOnceFix").click
+  alert = driver.switch_to.alert
+  alert.accept
+
+  #次
+  driver.find_element(:id, "doDateSearch").click
 end
 
-agent = Mechanize.new
-page = agent.get('http://sports.tef.or.jp/default.asp')
-page = agent.submit(get_form("REF1", page.forms))
-form = get_form("frm", page.forms)
-form.NUMBER = args[:number]
-page = agent.submit(form)
-form = get_form("frm", page.forms)
-form.NUMBER = args[:pass]
-page = agent.submit(form)
-form = get_form("FRM1", page.forms)
-form.CLASS = 3
-page = agent.submit(form)
-form = get_form("FRM1", page.forms)
-form.EST = 2090  # 駒沢A面
-p form
-page = agent.submit(form)
-form = get_form("FRM1", page.forms)
-form.ITEM = 52 # 軟式野球（成人）
-p form
-page = agent.submit(form)
-form = get_form("REFRSV_PAGE", page.forms)
-p form
-page = agent.submit(form)
-form = get_form("FRM1", page.forms)
-form.DATE = args[:date]
-p form
-page = agent.submit(form)
-form = get_form("FRM1", page.forms)
-form.DATE = args[:date]
-form.PIE = args[:time]
-form.STIME = stime
-form.ETIME = etime
-form.SELWAY = "1"
-p form
-page = agent.submit(form)
-form = get_form("nextpg", page.forms)
-page = agent.submit(form)
-form = get_form("EXECRSV", page.forms)
-page = agent.submit(form)
-form = get_form("result", page.forms)
-page = agent.submit(form)
-p page.body
-p page.forms
+driver.quit

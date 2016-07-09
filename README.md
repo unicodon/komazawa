@@ -1,21 +1,28 @@
 準備
 ----
+
+$ gem install selenium-webdriver
+
+chromedriverをインストール
+http://chromedriver.storage.googleapis.com/index.html
+から最新版をダウンロードしてパスの通ったところに置く
+
 登録番号と暗証番号のcsvファイルを用意する
-アクセスして候補の日時を選ぶ
-gem install mechanize
+    12234,4321,平岡,モンスターズ
+
+手動でアクセスして候補の日時を選ぶ
 
 実行
 ----
 候補の日時からコマンドを作成する
 
-    $ ruby hunter.rb 20141206:2 20141213:3
+    $ ruby hunter.rb 6:0 > batch.sh
 
-それぞれ7回実行する
+バッチを実行する
 
-    $ ruby koma.rb -d 20141206 -t 2 -n NUMBER -p PASS
+    $ sh batch.sh
 
-TODO
-----
-* 成功失敗がわかるようにする
-* コマンドを勝手に実行するようにする
-* デバッグ出力を抑制できるようにする
+
+Known Issues
+------------
+Macだと大量のchromeがdockに残る
