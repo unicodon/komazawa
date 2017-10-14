@@ -2,6 +2,8 @@
 require 'selenium-webdriver'
 require 'optparse'
 
+URL = 'https://sports.tef.or.jp/user/view/user/homeIndex.html'
+
 def cmdline
   args = {}
   OptionParser.new do |parser|
@@ -19,10 +21,10 @@ passwd = args[:pass]
 day = args[:day].to_i - 1
 time = args[:time].to_i
 
-puts "ID: " + userid
+puts "ID: " + userid + ",  PASS: " + passwd
 
 driver = Selenium::WebDriver.for :chrome
-driver.navigate.to 'https://sports.tef.or.jp/user/view/user/homeIndex.html'
+driver.navigate.to URL
 elements = driver.find_elements(:id, 'goBtn')
 elements[1].click
 
@@ -39,8 +41,7 @@ while next_pager != nil
     if e.text.include?("落選")
       puts "ハズレ"
     elsif e.text.include?("当選")
-      puts "当選！"
-      exit
+      puts "当選！ " + URL
     end
   end
   elements = driver.find_elements(:id, 'goNextPager')
