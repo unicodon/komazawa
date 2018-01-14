@@ -20,6 +20,7 @@ userid = args[:number]
 passwd = args[:pass]
 day = args[:day].to_i - 1
 time = args[:time].to_i
+puts "User ID #{userid}"
 
 driver = Selenium::WebDriver.for :chrome
 driver.navigate.to 'https://sports.tef.or.jp/user/view/user/homeIndex.html'
