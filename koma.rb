@@ -22,7 +22,10 @@ day = args[:day].to_i - 1
 time = args[:time].to_i
 puts "User ID #{userid}"
 
-driver = Selenium::WebDriver.for :chrome
+options = Selenium::WebDriver::Chrome::Options.new
+options.add_argument('--incognito') # secret mode
+
+driver = Selenium::WebDriver.for :chrome, options: options
 driver.navigate.to 'https://sports.tef.or.jp/user/view/user/homeIndex.html'
 elements = driver.find_elements(:id, 'goBtn')
 elements[1].click
