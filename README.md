@@ -3,7 +3,7 @@
 
 `$ gem install selenium-webdriver`
 
-`$ brew cask install chromedriver`
+`$ brew install chromedriver --cask`
 
 セキュリティとプライバシーの設定で、実行を許可する
 
