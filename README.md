@@ -5,6 +5,9 @@
 
 `$ brew install chromedriver --cask`
 
+(chromedriverのバージョンを最新にする場合)
+`brew reinstall --cask chromedriver`
+
 セキュリティとプライバシーの設定で、実行を許可する
 
 登録番号と暗証番号のcsvファイルを用意する
