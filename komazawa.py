@@ -59,5 +59,5 @@ parser.add_argument('-p', '--password', required=True)
 parser.add_argument('-d', '--day', type=int, required=True, help='1=1日')
 parser.add_argument('-t', '--time', type=int, required=True, help='0:0830-, 1:1030-, 2:1230-, 3:1430-, 4:1630-')
 args = parser.parse_args()
-run(args.day, args.time, args.username, args.password)
+run(args.day - 1, args.time, args.username, args.password)
 
