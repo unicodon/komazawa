@@ -29,7 +29,7 @@ def run(day, time, username, password):
     # 0:軟式野球場A面
     WebDriverWait(browser, timeout).until(lambda x: x.find_elements(By.ID, 'doAreaSet'))[0].click()
     
-    for i in range(0, 3):
+    for i in range(0, 7):
         #日にちを選択
         WebDriverWait(browser, timeout).until(lambda x: x.find_elements(By.CLASS_NAME, 'calclick'))[day].click()
 
